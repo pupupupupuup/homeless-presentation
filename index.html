@@ -4,73 +4,87 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GuardSME — AI Cybersecurity for Thai SME</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Sarabun:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #050a12;
-    --surface: #0a1628;
-    --card: #0d1f3c;
-    --border: #1a3a5c;
-    --accent: #00d4ff;
-    --accent2: #00ff88;
-    --accent3: #ff6b35;
-    --red: #ff3b5c;
-    --text: #e8f4ff;
-    --muted: #6b8aaa;
-    --glow: rgba(0,212,255,0.15);
+    /* Cyber Blue Theme */
+    --bg-dark: #010613;
+    --surface: #041328;
+    --card: rgba(4, 19, 40, 0.7);
+    --border: #0c3866;
+    --cyan: #00f0ff;
+    --cyan-dim: rgba(0, 240, 255, 0.2);
+    --blue: #1a66ff;
+    --red: #ff2a55;
+    --violet: #b566ff;
+    --text-main: #e2f1ff;
+    --text-muted: #7fa4c4;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     font-family: 'Sarabun', sans-serif;
-    background: var(--bg);
-    color: var(--text);
+    background-color: var(--bg-dark);
+    color: var(--text-main);
     overflow: hidden;
     height: 100vh;
     width: 100vw;
     cursor: none;
   }
 
-  /* Custom cursor */
-  .cursor {
+  /* Matrix Canvas Background */
+  #matrix-canvas {
     position: fixed;
-    width: 8px; height: 8px;
-    background: var(--accent);
-    border-radius: 50%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    opacity: 0.15;
+    pointer-events: none;
+  }
+
+  /* CRT Scanline Effect */
+  .scanlines {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 4px, 6px 100%;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  /* Custom Cyber Cursor */
+  .cursor-crosshair {
+    position: fixed;
+    width: 24px; height: 24px;
+    border: 1px solid var(--cyan);
+    transform: translate(-50%, -50%);
     pointer-events: none;
     z-index: 9999;
-    transition: transform 0.1s;
-    box-shadow: 0 0 15px var(--accent);
+    transition: width 0.1s, height 0.1s;
   }
-  .cursor-ring {
+  .cursor-crosshair::before, .cursor-crosshair::after {
+    content: ''; position: absolute; background: var(--cyan);
+  }
+  .cursor-crosshair::before { top: 50%; left: -4px; width: 32px; height: 1px; }
+  .cursor-crosshair::after { left: 50%; top: -4px; height: 32px; width: 1px; }
+  .cursor-dot {
     position: fixed;
-    width: 32px; height: 32px;
-    border: 1px solid rgba(0,212,255,0.4);
+    width: 4px; height: 4px;
+    background: #fff;
     border-radius: 50%;
+    transform: translate(-50%, -50%);
     pointer-events: none;
-    z-index: 9998;
-    transition: transform 0.15s, width 0.2s, height 0.2s;
+    z-index: 10000;
+    box-shadow: 0 0 10px var(--cyan);
   }
 
-  /* Grid background */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
-    background-size: 50px 50px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Slides container */
+  /* Slides Container */
   .slides {
     position: relative;
     width: 100%; height: 100vh;
-    z-index: 1;
+    z-index: 5;
   }
 
   .slide {
@@ -82,822 +96,588 @@
     justify-content: center;
     padding: 40px 60px;
     opacity: 0;
-    transform: translateX(60px);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(1.05);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: none;
   }
   .slide.active {
     opacity: 1;
-    transform: translateX(0);
+    transform: scale(1);
     pointer-events: all;
   }
   .slide.prev {
     opacity: 0;
-    transform: translateX(-60px);
+    transform: scale(0.95);
   }
 
-  /* Navigation */
+  /* Typography & Glitch */
+  .font-en { font-family: 'Rajdhani', sans-serif; }
+  .font-mono { font-family: 'Space Mono', monospace; }
+
+  .glitch-wrapper { position: relative; display: inline-block; }
+  .glitch {
+    font-size: 90px;
+    font-weight: 700;
+    letter-spacing: -2px;
+    position: relative;
+    color: #fff;
+    text-shadow: 0 0 20px var(--cyan-dim);
+  }
+  .glitch::before, .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: var(--bg-dark);
+  }
+  .glitch::before {
+    left: 4px;
+    text-shadow: -2px 0 var(--red);
+    animation: glitch-anim-1 2s infinite linear alternate-reverse;
+  }
+  .glitch::after {
+    left: -4px;
+    text-shadow: -2px 0 var(--cyan);
+    animation: glitch-anim-2 3s infinite linear alternate-reverse;
+  }
+
+  @keyframes glitch-anim-1 {
+    0% { clip-path: inset(20% 0 80% 0); }
+    20% { clip-path: inset(60% 0 10% 0); }
+    40% { clip-path: inset(40% 0 50% 0); }
+    60% { clip-path: inset(80% 0 5% 0); }
+    80% { clip-path: inset(10% 0 70% 0); }
+    100% { clip-path: inset(30% 0 50% 0); }
+  }
+  @keyframes glitch-anim-2 {
+    0% { clip-path: inset(10% 0 60% 0); }
+    20% { clip-path: inset(80% 0 5% 0); }
+    40% { clip-path: inset(30% 0 20% 0); }
+    60% { clip-path: inset(70% 0 10% 0); }
+    80% { clip-path: inset(20% 0 50% 0); }
+    100% { clip-path: inset(50% 0 30% 0); }
+  }
+
+  .slide-title {
+    font-size: 42px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-align: center;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+  }
+  .slide-sub {
+    font-size: 13px;
+    color: var(--cyan);
+    text-align: center;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 50px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+  }
+
+  .text-cyan { color: var(--cyan); text-shadow: 0 0 8px var(--cyan-dim); }
+  .text-red { color: var(--red); text-shadow: 0 0 8px rgba(255,42,85,0.3); }
+
+  /* Cyber Card (Sci-Fi Clipped Corners) */
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%; max-width: 1050px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; width: 100%; max-width: 1050px; }
+
+  .cyber-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    position: relative;
+    padding: 30px 24px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s;
+    /* Sci-fi corner cut */
+    clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+  }
+  .cyber-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 15px; height: 15px;
+    background: var(--cyan);
+  }
+  .cyber-card:hover {
+    border-color: var(--cyan);
+    box-shadow: inset 0 0 20px var(--cyan-dim);
+    transform: translateY(-5px);
+  }
+
+  /* Terminal Window Style */
+  .terminal-card {
+    background: #020813;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .terminal-header {
+    background: #061933;
+    border-bottom: 1px solid var(--border);
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--cyan);
+  }
+  .terminal-dots { display: flex; gap: 4px; }
+  .tdot { width: 8px; height: 8px; border-radius: 50%; background: #334455; }
+  .tdot:nth-child(1) { background: #ff5f56; }
+  .tdot:nth-child(2) { background: #ffbd2e; }
+  .tdot:nth-child(3) { background: #27c93f; }
+  .terminal-body { padding: 20px; font-size: 14px; }
+
+  /* Navigation & UI Shell */
   .nav {
     position: fixed;
-    bottom: 36px;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
     z-index: 100;
-    background: rgba(10,22,40,0.85);
+    background: rgba(2, 8, 19, 0.8);
     border: 1px solid var(--border);
-    padding: 12px 24px;
-    border-radius: 50px;
-    backdrop-filter: blur(20px);
+    padding: 10px 24px;
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
   }
   .nav button {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--accent);
-    padding: 8px 20px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    transition: all 0.2s;
+    background: transparent; border: none; color: var(--cyan);
+    padding: 8px 16px; cursor: pointer;
+    font-family: 'Space Mono', monospace; font-size: 12px;
+    text-transform: uppercase; letter-spacing: 2px;
+    transition: 0.2s;
   }
-  .nav button:hover { background: var(--glow); border-color: var(--accent); }
-  .dots { display: flex; gap: 8px; align-items: center; }
+  .nav button:hover { color: #fff; text-shadow: 0 0 8px var(--cyan); }
+  .dots { display: flex; gap: 8px; align-items: center; margin: 0 10px; }
   .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--border);
-    transition: all 0.3s;
-    cursor: pointer;
+    width: 20px; height: 4px; background: var(--border);
+    transition: 0.3s; cursor: pointer;
   }
-  .dot.active { background: var(--accent); width: 20px; border-radius: 3px; box-shadow: 0 0 8px var(--accent); }
+  .dot.active { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
 
-  /* Slide counter */
-  .counter {
+  .ui-element {
     position: fixed;
-    top: 28px; right: 40px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 12px;
-    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--cyan);
     z-index: 100;
     letter-spacing: 2px;
   }
-  .counter span { color: var(--accent); }
+  .top-left { top: 30px; left: 40px; }
+  .top-right { top: 30px; right: 40px; text-align: right; }
+  .bottom-right { bottom: 30px; right: 40px; text-align: right; color: var(--text-muted); }
 
-  /* Team badge */
-  .team-badge {
+  .progress-container {
     position: fixed;
-    top: 28px; left: 40px;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 13px;
-    color: var(--muted);
-    z-index: 100;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-  }
-
-  /* ===== SLIDE STYLES ===== */
-
-  /* SLIDE 1 — Hero */
-  .s1-logo {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 100px;
-    font-weight: 700;
-    line-height: 1;
-    background: linear-gradient(135deg, #00d4ff 0%, #00ff88 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: -2px;
-    filter: drop-shadow(0 0 40px rgba(0,212,255,0.4));
-    animation: pulse-glow 3s ease-in-out infinite;
-  }
-  @keyframes pulse-glow {
-    0%, 100% { filter: drop-shadow(0 0 40px rgba(0,212,255,0.4)); }
-    50% { filter: drop-shadow(0 0 60px rgba(0,212,255,0.7)); }
-  }
-  .s1-sub {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 13px;
-    color: var(--accent);
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    margin-top: 8px;
-  }
-  .s1-tagline {
-    font-size: 22px;
-    color: var(--text);
-    opacity: 0.9;
-    margin-top: 24px;
-    font-weight: 300;
-    text-align: center;
-    line-height: 1.6;
-    max-width: 700px;
-  }
-  .s1-tagline strong { color: var(--accent2); font-weight: 700; }
-  .s1-stats {
-    display: flex;
-    gap: 60px;
-    margin-top: 48px;
-  }
-  .s1-stat {
-    text-align: center;
-    border: 1px solid var(--border);
-    padding: 20px 32px;
-    border-radius: 12px;
-    background: var(--card);
-    position: relative;
-    overflow: hidden;
-  }
-  .s1-stat::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-  }
-  .s1-stat-num {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 36px;
-    font-weight: 700;
-    color: var(--accent);
-  }
-  .s1-stat-label {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 4px;
-    letter-spacing: 1px;
-  }
-
-  /* SLIDE 2 — Problem */
-  .slide-title {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 48px;
-    font-weight: 700;
-    letter-spacing: -1px;
-    margin-bottom: 8px;
-    text-align: center;
-  }
-  .slide-title .accent { color: var(--accent); }
-  .slide-title .red { color: var(--red); }
-  .slide-title .green { color: var(--accent2); }
-  .slide-sub {
-    font-size: 14px;
-    color: var(--muted);
-    text-align: center;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-bottom: 48px;
-    font-family: 'Share Tech Mono', monospace;
-  }
-
-  .problem-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    width: 100%;
-    max-width: 900px;
-  }
-  .problem-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px 24px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.3s;
-  }
-  .problem-card:hover { border-color: var(--red); }
-  .problem-card::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--red);
-    opacity: 0.6;
-  }
-  .p-icon { font-size: 32px; margin-bottom: 12px; }
-  .p-title { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 600; color: var(--red); margin-bottom: 8px; }
-  .p-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
-
-  /* SLIDE 3 — Solution */
-  .solution-row {
-    display: flex;
-    align-items: center;
-    gap: 60px;
-    width: 100%;
-    max-width: 1000px;
-  }
-  .solution-left { flex: 1; }
-  .solution-right { flex: 1; display: flex; flex-direction: column; gap: 14px; }
-  .sol-feature {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent2);
-    border-radius: 0 12px 12px 0;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    transition: all 0.2s;
-  }
-  .sol-feature:hover { background: rgba(0,255,136,0.05); border-left-color: var(--accent2); transform: translateX(6px); }
-  .sol-icon { font-size: 22px; width: 36px; text-align: center; }
-  .sol-text h4 { font-family: 'Rajdhani', sans-serif; font-size: 16px; color: var(--accent2); }
-  .sol-text p { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-  .big-shield {
-    width: 200px; height: 200px;
-    background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(0,255,136,0.1));
-    border: 2px solid rgba(0,212,255,0.3);
-    border-radius: 50% 50% 40% 40% / 50% 50% 40% 40%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 80px;
-    margin: 0 auto 20px;
-    animation: float 4s ease-in-out infinite;
-    box-shadow: 0 0 60px rgba(0,212,255,0.2), inset 0 0 30px rgba(0,212,255,0.05);
-  }
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
-  }
-  .shield-label {
-    text-align: center;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .shield-sub { text-align: center; font-size: 13px; color: var(--muted); margin-top: 4px; }
-
-  /* SLIDE 4 — AI Models */
-  .models-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    width: 100%;
-    max-width: 900px;
-  }
-  .model-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s;
-  }
-  .model-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-  .model-num {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 2px;
-    margin-bottom: 8px;
-  }
-  .model-name {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .model-tech {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
-    background: rgba(255,255,255,0.04);
-    padding: 4px 10px;
-    border-radius: 4px;
-    display: inline-block;
-    margin-bottom: 12px;
-  }
-  .model-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
-  .model-bar {
-    margin-top: 14px;
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .model-bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    animation: fillbar 2s ease-out forwards;
-  }
-  @keyframes fillbar { from { width: 0; } }
-  .m1 .model-name { color: #00d4ff; }
-  .m1 .model-bar-fill { width: 87%; background: linear-gradient(90deg, #00d4ff, #00aacc); }
-  .m2 .model-name { color: #00ff88; }
-  .m2 .model-bar-fill { width: 76%; background: linear-gradient(90deg, #00ff88, #00cc66); }
-  .m3 .model-name { color: #ff6b35; }
-  .m3 .model-bar-fill { width: 82%; background: linear-gradient(90deg, #ff6b35, #cc4420); }
-  .m4 .model-name { color: #a78bfa; }
-  .m4 .model-bar-fill { width: 95%; background: linear-gradient(90deg, #a78bfa, #7c3aed); }
-  .model-score {
-    position: absolute;
-    top: 20px; right: 20px;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    opacity: 0.3;
-  }
-
-  /* SLIDE 5 — Flow */
-  .flow-container {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    width: 100%;
-    max-width: 1000px;
-    overflow-x: auto;
-  }
-  .flow-step {
-    flex: 1;
-    text-align: center;
-    position: relative;
-  }
-  .flow-step:not(:last-child)::after {
-    content: '→';
-    position: absolute;
-    right: -14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--accent);
-    font-size: 20px;
-    z-index: 2;
-  }
-  .flow-box {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 12px;
-    margin: 0 14px;
-    transition: all 0.3s;
-  }
-  .flow-box:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,212,255,0.1); }
-  .flow-emoji { font-size: 28px; margin-bottom: 8px; }
-  .flow-label { font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 600; color: var(--accent); }
-  .flow-desc { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
-
-  .threat-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 32px;
-    max-width: 900px;
-  }
-  .threat-tag {
-    background: rgba(255,59,92,0.1);
-    border: 1px solid rgba(255,59,92,0.3);
-    color: #ff8aaa;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-family: 'Share Tech Mono', monospace;
-    letter-spacing: 1px;
-  }
-
-  /* SLIDE 6 — Business */
-  .biz-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    width: 100%;
-    max-width: 900px;
-    margin-top: 8px;
-  }
-  .biz-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px 24px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .biz-phase {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 2px;
-    margin-bottom: 12px;
-  }
-  .biz-price {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--accent2);
-    line-height: 1;
-  }
-  .biz-unit { font-size: 12px; color: var(--muted); margin: 4px 0 12px; }
-  .biz-item { font-size: 12px; color: var(--muted); padding: 4px 0; border-top: 1px solid rgba(255,255,255,0.04); }
-  .biz-highlight {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-  }
-  .phase-hack .biz-highlight { background: var(--accent); }
-  .phase-mvp .biz-highlight { background: var(--accent2); }
-  .phase-prod .biz-highlight { background: var(--accent3); }
-
-  /* SLIDE 7 — Team / CTA */
-  .team-cards {
-    display: flex;
-    gap: 24px;
-    margin: 32px 0;
-  }
-  .team-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px 28px;
-    text-align: center;
-    min-width: 160px;
-    transition: all 0.3s;
-  }
-  .team-card:hover { border-color: var(--accent); transform: translateY(-4px); }
-  .avatar {
-    width: 52px; height: 52px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--bg);
-    margin: 0 auto 12px;
-  }
-  .team-name { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 600; }
-  .team-role { font-size: 11px; color: var(--muted); margin-top: 4px; }
-
-  .cta-block {
-    background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(0,255,136,0.08));
-    border: 1px solid rgba(0,212,255,0.3);
-    border-radius: 16px;
-    padding: 28px 48px;
-    text-align: center;
-    max-width: 600px;
-  }
-  .cta-text {
-    font-size: 18px;
-    line-height: 1.7;
-    color: var(--text);
-    opacity: 0.9;
-  }
-  .cta-text strong { color: var(--accent2); }
-  .cta-motto {
-    margin-top: 16px;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 1px;
-  }
-
-  /* Scan line effect */
-  body::after {
-    content: '';
-    position: fixed;
-    top: -100%;
-    left: 0; right: 0;
-    height: 50%;
-    background: linear-gradient(transparent, rgba(0,212,255,0.02), transparent);
-    animation: scan 8s linear infinite;
-    pointer-events: none;
-    z-index: 50;
-  }
-  @keyframes scan {
-    0% { top: -50%; }
-    100% { top: 150%; }
-  }
-
-  /* Progress bar */
-  .progress-bar {
-    position: fixed;
-    top: 0; left: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    top: 0; left: 0; width: 100%; height: 3px;
+    background: #020813;
     z-index: 200;
-    box-shadow: 0 0 10px var(--accent);
+  }
+  .progress-bar {
+    height: 100%;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
+    transition: width 0.4s ease;
   }
 
-  /* Keyboard hint */
-  .hint {
-    position: fixed;
-    bottom: 90px;
-    right: 40px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    color: var(--border);
-    letter-spacing: 1px;
+  /* Table Style */
+  .tech-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .tech-table th, .tech-table td {
+    padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border);
   }
+  .tech-table th { color: var(--cyan); font-weight: 500; font-family: 'Space Mono', monospace; font-size: 11px; }
+  .tech-table tr:hover td { background: rgba(0, 240, 255, 0.05); }
+
+  /* Tags */
+  .case-tag { padding: 4px 8px; font-size: 10px; font-family: 'Space Mono'; border-radius: 2px; }
+  .tag-critical { background: rgba(255,42,85,0.1); color: var(--red); border: 1px solid var(--red); }
+  .tag-high { background: rgba(181,102,255,0.1); color: var(--violet); border: 1px solid var(--violet); }
+
+  /* Blinking Text */
+  .blink { animation: blinker 1s linear infinite; }
+  @keyframes blinker { 50% { opacity: 0; } }
+
+  /* Data Stats Panel */
+  .stats-panel {
+    display: flex; gap: 20px; border: 1px solid var(--border); padding: 16px 24px;
+    background: rgba(0, 0, 0, 0.5); border-left: 3px solid var(--cyan);
+  }
+  .stat-block .val { font-size: 24px; font-weight: 700; color: #fff; font-family: 'Space Mono'; }
+  .stat-block .lbl { font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
 </style>
 </head>
 <body>
 
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
-<div class="progress-bar" id="progressBar"></div>
-<div class="team-badge">TEAM HOMELESS</div>
-<div class="counter">SLIDE <span id="currentSlide">01</span> / <span id="totalSlides">07</span></div>
-<div class="hint">← → ARROW KEYS</div>
+<!-- Canvas for Matrix Background -->
+<canvas id="matrix-canvas"></canvas>
+
+<!-- Overlay Effects -->
+<div class="scanlines"></div>
+<div class="cursor-crosshair" id="cursorBox"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+
+<!-- UI Shell Elements -->
+<div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+<div class="ui-element top-left">
+  SYS.STATUS: <span class="text-cyan">ONLINE</span><br>
+  TEAM: HOMELESS<br>
+  TARGET: LEAGUES OF CODE #2
+</div>
+<div class="ui-element top-right">
+  SLIDE <span id="currentSlide" style="color:#fff; font-size:14px;">01</span> / <span id="totalSlides">08</span><br>
+  [ ENCRYPTED CONNECTION ]
+</div>
+<div class="ui-element bottom-right blink">_AWAITING_INPUT</div>
 
 <div class="slides" id="slides">
 
   <!-- SLIDE 1: HERO -->
   <div class="slide active" data-index="0">
-    <div class="s1-logo">GuardSME</div>
-    <div class="s1-sub">AI CYBERSECURITY PLATFORM</div>
-    <div class="s1-tagline">
-      ระบบรักษาความปลอดภัยไซเบอร์ด้วย AI<br>
-      สำหรับธุรกิจไทยที่ <strong>ไม่ต้องมี IT Team</strong>
+    <div class="glitch-wrapper">
+      <div class="font-en glitch" data-text="GuardSME">GuardSME</div>
     </div>
-    <div class="s1-stats">
-      <div class="s1-stat">
-        <div class="s1-stat-num">3M+</div>
-        <div class="s1-stat-label">SME ไทย</div>
+    <div class="slide-sub font-mono">AI Cybersecurity Platform_</div>
+    <div style="font-size: 22px; color: var(--text-main); font-weight: 300; max-width: 600px; line-height: 1.6; text-align: center; margin-top: 10px;">
+      ระบบรักษาความปลอดภัยไซเบอร์ด้วย AI<br>
+      สำหรับธุรกิจไทยที่ <strong class="text-cyan font-mono" style="font-size: 24px;">ไม่ต้องมี IT Team</strong>
+    </div>
+    
+    <div class="stats-panel" style="margin-top: 60px;">
+      <div class="stat-block">
+        <div class="val">3M+</div>
+        <div class="lbl">SME THAILAND</div>
       </div>
-      <div class="s1-stat">
-        <div class="s1-stat-num">35%</div>
-        <div class="s1-stat-label">GDP ประเทศ</div>
+      <div class="stat-block">
+        <div class="val">35%</div>
+        <div class="lbl">NATIONAL GDP</div>
       </div>
-      <div class="s1-stat">
-        <div class="s1-stat-num">24/7</div>
-        <div class="s1-stat-label">AI Protection</div>
-      </div>
-      <div class="s1-stat">
-        <div class="s1-stat-num">4</div>
-        <div class="s1-stat-label">AI Models</div>
+      <div class="stat-block">
+        <div class="val text-cyan">24/7</div>
+        <div class="lbl">AI PROTECTION</div>
       </div>
     </div>
   </div>
 
   <!-- SLIDE 2: PROBLEM -->
   <div class="slide" data-index="1">
-    <div class="slide-title">ปัญหาที่ <span class="red">SME ไทย</span> เผชิญ</div>
-    <div class="slide-sub">THE CYBERSECURITY GAP</div>
-    <div class="problem-grid">
-      <div class="problem-card">
-        <div class="p-icon">💸</div>
-        <div class="p-title">ต้นทุนสูง</div>
-        <div class="p-desc">ระบบ Security ระดับ Enterprise เช่น Palo Alto และ CrowdStrike มีราคาที่ SME ไม่สามารถเข้าถึงได้</div>
+    <div class="slide-title">ปัญหาที่ <span class="text-cyan">SME ไทย</span> เผชิญ</div>
+    <div class="slide-sub font-mono">Target_Vulnerabilities</div>
+    <div class="grid-3">
+      <div class="cyber-card">
+        <div style="font-size: 28px; margin-bottom: 16px;">💸</div>
+        <div style="font-size: 18px; font-weight: 500; margin-bottom: 8px; color:#fff;">ต้นทุนสูงเกินไป</div>
+        <div style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">ระบบ Security ระดับ Enterprise (Palo Alto, CrowdStrike) มีราคาแพงเกินกว่าที่ SME จะลงทุนไหว</div>
       </div>
-      <div class="problem-card">
-        <div class="p-icon">👤</div>
-        <div class="p-title">ขาดผู้เชี่ยวชาญ</div>
-        <div class="p-desc">SME ส่วนใหญ่ไม่มีทีม IT Security ทำให้ไม่สามารถตรวจจับหรือรับมือภัยคุกคามได้ทันท่วงที</div>
+      <div class="cyber-card">
+        <div style="font-size: 28px; margin-bottom: 16px;">👨‍💻</div>
+        <div style="font-size: 18px; font-weight: 500; margin-bottom: 8px; color:#fff;">ขาดบุคลากร IT</div>
+        <div style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">ไม่มีทีมเชี่ยวชาญด้าน Security โดยตรง ทำให้ตรวจจับและรับมือภัยคุกคามไม่ทันท่วงที</div>
       </div>
-      <div class="problem-card">
-        <div class="p-icon">🇹🇭</div>
-        <div class="p-title">ภัยคุกคามภาษาไทย</div>
-        <div class="p-desc">Phishing ภาษาไทย, SMS หลอกลวง, LINE Official ปลอม — ระบบต่างชาติตรวจจับไม่แม่นยำ</div>
+      <div class="cyber-card">
+        <div style="font-size: 28px; margin-bottom: 16px; color: var(--red);">⚠️</div>
+        <div style="font-size: 18px; font-weight: 500; margin-bottom: 8px; color: var(--red);">ภัยคุกคามเฉพาะถิ่น</div>
+        <div style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">Phishing ภาษาไทย, SMS หลอกลวง, LINE ปลอม ที่ระบบต่างชาติตรวจจับความหมายเชิงลึกไม่ได้</div>
       </div>
     </div>
   </div>
 
   <!-- SLIDE 3: SOLUTION -->
   <div class="slide" data-index="2">
-    <div class="slide-title"><span class="green">GuardSME</span> — Virtual Security Team</div>
-    <div class="slide-sub">AI-POWERED SOLUTION</div>
-    <div class="solution-row">
-      <div class="solution-left">
-        <div class="big-shield">🛡️</div>
-        <div class="shield-label">DETECT → ANALYZE → DECIDE → ACT</div>
-        <div class="shield-sub">ทำงานอัตโนมัติ 24/7</div>
+    <div class="slide-title">GuardSME : <span class="text-cyan">Virtual Security Team</span></div>
+    <div class="slide-sub font-mono">System_Architecture</div>
+    <div class="grid-2" style="align-items: center;">
+      <div>
+        <h3 style="font-size: 22px; font-weight: 500; margin-bottom: 16px; color: #fff;">
+          ให้ AI อธิบายความเสี่ยง <span class="text-cyan">"เป็นภาษาไทย"</span>
+        </h3>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.8; margin-bottom: 24px;">
+          บอกลา Log ที่ซับซ้อน ระบบทำงานอัตโนมัติ 24 ชั่วโมง สรุปสถานการณ์และแนะแนวทางแก้ไขให้เจ้าของธุรกิจตัดสินใจได้ทันที โดยไม่ต้องมีพื้นฐานด้าน IT Security
+        </p>
+        <div class="font-mono" style="color: var(--cyan); font-size: 12px; margin-bottom: 10px;">> CAPABILITIES:</div>
+        <ul style="list-style: none; font-size: 14px; line-height: 2; padding-left: 10px; border-left: 1px solid var(--border);">
+          <li><span class="text-cyan">✓</span> Plug & Play ติดตั้งง่าย</li>
+          <li><span class="text-cyan">✓</span> Real-time Alert แจ้งเตือนทันทีผ่าน LINE</li>
+          <li><span class="text-cyan">✓</span> Explainable AI อธิบายเหตุผลของการบล็อก</li>
+        </ul>
       </div>
-      <div class="solution-right">
-        <div class="sol-feature">
-          <div class="sol-icon">🔍</div>
-          <div class="sol-text">
-            <h4>Real-time Threat Detection</h4>
-            <p>ตรวจจับภัยคุกคามทันทีที่เกิดขึ้น แจ้งเตือนผ่าน LINE / Email / Dashboard</p>
-          </div>
+      
+      <!-- Terminal UI for System Flow -->
+      <div class="terminal-card">
+        <div class="terminal-header">
+          <div class="terminal-dots"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>
+          <span style="margin-left: 10px;">root@guardsme:~/engine</span>
         </div>
-        <div class="sol-feature">
-          <div class="sol-icon">🤖</div>
-          <div class="sol-text">
-            <h4>Thai-First AI</h4>
-            <p>โมเดล AI ที่เข้าใจภาษาและบริบทไทย ไม่ใช่แค่ระบบแปลภาษา</p>
-          </div>
-        </div>
-        <div class="sol-feature">
-          <div class="sol-icon">📊</div>
-          <div class="sol-text">
-            <h4>Explainable Risk Score</h4>
-            <p>อธิบายความเสี่ยงเป็นภาษาไทยที่เข้าใจง่าย พร้อมขั้นตอนแก้ไขที่ทำได้จริง</p>
-          </div>
-        </div>
-        <div class="sol-feature">
-          <div class="sol-icon">⚡</div>
-          <div class="sol-text">
-            <h4>Plug & Play</h4>
-            <p>ติดตั้งง่าย ไม่ต้องมีความรู้ IT ราคาเหมาะสมสำหรับ SME</p>
-          </div>
+        <div class="terminal-body font-mono">
+          <div style="color: #4ade80;">$ ./init_defense_protocol.sh</div>
+          <div style="color: var(--text-muted); margin-top: 8px;">[1] DETECT: <span style="color:#fff;">Ingesting Email & Login Logs...</span></div>
+          <div style="color: var(--text-muted); margin-top: 4px;">[2] ANALYZE: <span style="color:#fff;">Running 4 AI Models...</span></div>
+          <div style="color: var(--text-muted); margin-top: 4px;">[3] DECIDE: <span style="color:#fff;">Calculating Unified Risk Score...</span></div>
+          <div style="color: var(--text-muted); margin-top: 4px;">[4] ACT: <span class="text-cyan">Executing Auto-Block & Line Notify</span></div>
+          <div style="margin-top: 10px; display:inline-block; width: 8px; height: 16px; background: var(--cyan);" class="blink"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- SLIDE 4: AI MODELS -->
+  <!-- SLIDE 4: TECH -->
   <div class="slide" data-index="3">
-    <div class="slide-title"><span class="accent">4 AI Models</span> ทำงานร่วมกัน</div>
-    <div class="slide-sub">MULTI-MODEL AI ARCHITECTURE</div>
-    <div class="models-grid">
-      <div class="model-card m1">
-        <div class="model-score">87</div>
-        <div class="model-num">MODEL 01</div>
-        <div class="model-name">Phishing & Scam Detection</div>
-        <div class="model-tech">WangchanBERTa (Thai BERT) · NLP</div>
-        <div class="model-desc">ตรวจจับข้อความ Phishing ภาษาไทยใน Email, SMS — Fine-tuned บน Dataset 20,000+ รายการ</div>
-        <div class="model-bar"><div class="model-bar-fill"></div></div>
-      </div>
-      <div class="model-card m2">
-        <div class="model-score">76</div>
-        <div class="model-num">MODEL 02</div>
-        <div class="model-name">Anomaly Login Detection</div>
-        <div class="model-tech">Isolation Forest + LSTM Autoencoder</div>
-        <div class="model-desc">วิเคราะห์พฤติกรรม Login ผิดปกติ IP ต่างประเทศ เวลาผิดปกติ และ Device ใหม่</div>
-        <div class="model-bar"><div class="model-bar-fill"></div></div>
-      </div>
-      <div class="model-card m3">
-        <div class="model-score">82</div>
-        <div class="model-num">MODEL 03</div>
-        <div class="model-name">Vulnerability Scanner</div>
-        <div class="model-tech">GNN + OpenVAS · Purple Team Module</div>
-        <div class="model-desc">สแกนช่องโหว่ระบบ Map กับ CVE Database อธิบายเป็นภาษาไทยพร้อมแนวทางแก้ไข</div>
-        <div class="model-bar"><div class="model-bar-fill"></div></div>
-      </div>
-      <div class="model-card m4">
-        <div class="model-score">95</div>
-        <div class="model-num">MODEL 04</div>
-        <div class="model-name">Context AI (Claude)</div>
-        <div class="model-tech">LLM · Chain-of-Thought Reasoning</div>
-        <div class="model-desc">รวม Output จาก 3 Model สร้าง Unified Risk Score 0–100 พร้อมคำแนะนำเชิงปฏิบัติ</div>
-        <div class="model-bar"><div class="model-bar-fill"></div></div>
-      </div>
+    <div class="slide-title">ขุมพลัง <span class="text-cyan">Multi-Model AI</span></div>
+    <div class="slide-sub font-mono">Core_Engine_Modules</div>
+    <div class="cyber-card" style="width: 100%; max-width: 1050px; padding: 20px;">
+      <table class="tech-table">
+        <thead>
+          <tr>
+            <th>ID / MODULE</th>
+            <th>ALGORITHM & TECH</th>
+            <th>DATA / FEATURES</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:#fff; font-weight:500;">[ M01 ] Phishing Detection</td>
+            <td>Fine-tuned WangchanBERTa (Thai BERT)</td>
+            <td>20,000+ Thai SMS/Email (Thaipoliceonline)</td>
+          </tr>
+          <tr>
+            <td style="color:#fff; font-weight:500;">[ M02 ] Anomaly Login</td>
+            <td>Isolation Forest + LSTM Autoencoder</td>
+            <td>Time, IP, Location, Device logs</td>
+          </tr>
+          <tr>
+            <td style="color:#fff; font-weight:500;">[ M03 ] Vulnerability Scan</td>
+            <td>Graph Neural Network (GNN) + OpenVAS</td>
+            <td>CVE Database, OWASP Top 10</td>
+          </tr>
+          <tr>
+            <td style="color:var(--cyan); font-weight:600;">[ M04 ] Context AI (Brain)</td>
+            <td class="text-cyan">Claude (LLM) + Prompt Engineering</td>
+            <td class="text-cyan">Outputs from M01-M03 → Unified Risk Score</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <!-- SLIDE 5: HOW IT WORKS -->
+  <!-- SLIDE 5: OUTPUT EXAMPLES -->
   <div class="slide" data-index="4">
-    <div class="slide-title">ระบบทำงาน<span class="accent">อย่างไร</span></div>
-    <div class="slide-sub">DETECT → ANALYZE → DECIDE → ACT</div>
-    <div class="flow-container">
-      <div class="flow-step">
-        <div class="flow-box">
-          <div class="flow-emoji">📨</div>
-          <div class="flow-label">INPUT</div>
-          <div class="flow-desc">Email / SMS<br>Login Logs<br>Network Data</div>
+    <div class="slide-title">ตัวอย่างการตอบสนอง <span class="text-cyan">Real-time</span></div>
+    <div class="slide-sub font-mono">Incident_Response_Logs</div>
+    <div class="grid-2">
+      <!-- Terminal Alert 1 -->
+      <div class="terminal-card">
+        <div class="terminal-header" style="border-bottom-color: var(--red);">
+          <div class="terminal-dots"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>
+          <span style="color: var(--red);">ALERT: DATA_LEAK_RISK</span>
+        </div>
+        <div class="terminal-body">
+          <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+            <span class="font-mono" style="color:var(--text-muted);">Timestamp: 02:13:44</span>
+            <span class="case-tag tag-critical font-mono blink">CRITICAL 0.89</span>
+          </div>
+          <div style="font-size: 14px; margin-bottom: 12px; line-height: 1.6;">
+            <span class="text-red">> Incident:</span> ฝ่ายขายดาวน์โหลดข้อมูลลูกค้า 148 ไฟล์ นอกเวลาทำงาน<br>
+            <span class="text-cyan">> Context AI:</span> วิเคราะห์พบความเสี่ยงสูงต่อการละเมิด PDPA
+          </div>
+          <div style="border-top: 1px dashed var(--border); padding-top: 12px; font-family:'Space Mono'; font-size:12px;">
+            <div style="color:#fff;">[ ACTION TAKEN ]</div>
+            <div class="text-cyan">✓ Account Locked</div>
+            <div class="text-cyan">✓ Connection Terminated</div>
+          </div>
         </div>
       </div>
-      <div class="flow-step">
-        <div class="flow-box">
-          <div class="flow-emoji">⚙️</div>
-          <div class="flow-label">PROCESS</div>
-          <div class="flow-desc">Data Cleaning<br>Normalize<br>Feature Extract</div>
+      
+      <!-- Terminal Alert 2 -->
+      <div class="terminal-card">
+        <div class="terminal-header" style="border-bottom-color: var(--violet);">
+          <div class="terminal-dots"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>
+          <span style="color: var(--violet);">ALERT: PHISHING_ATTACK</span>
+        </div>
+        <div class="terminal-body">
+          <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+            <span class="font-mono" style="color:var(--text-muted);">Timestamp: 10:42:11</span>
+            <span class="case-tag tag-high font-mono">HIGH RISK 0.91</span>
+          </div>
+          <div style="font-size: 14px; margin-bottom: 12px; line-height: 1.6;">
+            <span style="color:var(--violet);">> Incident:</span> บัญชีได้รับอีเมลอ้างว่า "บัญชีธนาคารถูกระงับ" พร้อมลิงก์ปลอม<br>
+            <span class="text-cyan">> Context AI:</span> รูปแบบหลอกลวงภาษาไทย เป้าหมายเพื่อขโมย Credential
+          </div>
+          <div style="border-top: 1px dashed var(--border); padding-top: 12px; font-family:'Space Mono'; font-size:12px;">
+            <div style="color:#fff;">[ ACTION TAKEN ]</div>
+            <div class="text-cyan">✓ Malicious URL Blocked</div>
+            <div class="text-cyan">✓ Display Warning Interface</div>
+          </div>
         </div>
       </div>
-      <div class="flow-step">
-        <div class="flow-box">
-          <div class="flow-emoji">🧠</div>
-          <div class="flow-label">AI DETECT</div>
-          <div class="flow-desc">Model 1–3<br>Multi-Model<br>Ensemble</div>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-box">
-          <div class="flow-emoji">🤖</div>
-          <div class="flow-label">CONTEXT AI</div>
-          <div class="flow-desc">Claude LLM<br>Risk Fusion<br>Thai Explain</div>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-box">
-          <div class="flow-emoji">🚨</div>
-          <div class="flow-label">ACTION</div>
-          <div class="flow-desc">Alert (LINE)<br>Block / Lock<br>Dashboard</div>
-        </div>
-      </div>
-    </div>
-    <div class="threat-row">
-      <span class="threat-tag">PHISHING TH</span>
-      <span class="threat-tag">ACCOUNT TAKEOVER</span>
-      <span class="threat-tag">RANSOMWARE</span>
-      <span class="threat-tag">UNPATCHED CVE</span>
-      <span class="threat-tag">INSIDER THREAT</span>
-      <span class="threat-tag">MALWARE</span>
     </div>
   </div>
 
-  <!-- SLIDE 6: BUDGET -->
+  <!-- SLIDE 6: SECURITY / PDPA -->
   <div class="slide" data-index="5">
-    <div class="slide-title">งบประมาณ <span class="green">Lean but Scalable</span></div>
-    <div class="slide-sub">BUDGET & ROADMAP</div>
-    <div class="biz-grid">
-      <div class="biz-card phase-hack">
-        <div class="biz-highlight"></div>
-        <div class="biz-phase">PHASE 01 · HACKATHON</div>
-        <div class="biz-price">~5K</div>
-        <div class="biz-unit">บาท (ครั้งเดียว)</div>
-        <div class="biz-item">LLM API (Demo)</div>
-        <div class="biz-item">Cloud VM ขนาดเล็ก</div>
-        <div class="biz-item">Domain & Tools</div>
+    <div class="slide-title">มาตรฐานความปลอดภัย & <span class="text-cyan">PDPA</span></div>
+    <div class="slide-sub font-mono">Compliance_&_Architecture</div>
+    <div class="grid-3">
+      <div class="cyber-card">
+        <div class="font-mono text-cyan" style="font-size:12px; margin-bottom:8px;">01. PURPLE TEAM</div>
+        <div style="font-size: 18px; font-weight: 500; margin-bottom: 12px; color:#fff;">Continuous Defense</div>
+        <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+          AI ทำการจำลองฝั่ง <strong class="text-cyan">Red Team</strong> (การโจมตี) และ <strong class="text-cyan">Blue Team</strong> (ตรวจจับ) เพื่อนำผลลัพธ์มาอัปเดตระบบป้องกันแบบ Feedback Loop
+        </div>
       </div>
-      <div class="biz-card phase-mvp">
-        <div class="biz-highlight"></div>
-        <div class="biz-phase">PHASE 02 · MVP (50–100 SME)</div>
-        <div class="biz-price">8–15K</div>
-        <div class="biz-unit">บาท / เดือน</div>
-        <div class="biz-item">Cloud + Database</div>
-        <div class="biz-item">AI API (Phishing + Claude)</div>
-        <div class="biz-item">Monitoring / Logging</div>
+      <div class="cyber-card">
+        <div class="font-mono text-cyan" style="font-size:12px; margin-bottom:8px;">02. ANTI-EVASION</div>
+        <div style="font-size: 18px; font-weight: 500; margin-bottom: 12px; color:#fff;">Adversarial AI Risk</div>
+        <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+          ป้องกันมิจฉาชีพที่พยายามบิดเบือนข้อความเพื่อหลบหลีกระบบ ด้วยการใช้ <strong class="text-cyan">Ensemble Model</strong> และอัปเดตข้อมูล Adversarial Training
+        </div>
       </div>
-      <div class="biz-card phase-prod">
-        <div class="biz-highlight"></div>
-        <div class="biz-phase">PHASE 03 · PRODUCTION</div>
-        <div class="biz-price">30–80K</div>
-        <div class="biz-unit">บาท / เดือน</div>
-        <div class="biz-item">Auto-scaling Infra</div>
-        <div class="biz-item">AI ตาม user growth</div>
-        <div class="biz-item">Security & Redundancy</div>
+      <div class="cyber-card">
+        <div class="font-mono text-cyan" style="font-size:12px; margin-bottom:8px;">03. DATA PRIVACY</div>
+        <div style="font-size: 18px; font-weight: 500; margin-bottom: 12px; color:#fff;">PDPA Compliant</div>
+        <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+          ข้อมูล Log จะถูกลบข้อมูลส่วนบุคคล (Anonymized) แยก Database SME แต่ละรายชัดเจน พร้อมเข้ารหัส AES-256 และ TLS 1.3
+        </div>
       </div>
-    </div>
-    <div style="margin-top:28px; text-align:center; max-width:700px;">
-      <p style="font-size:14px; color:var(--muted); line-height:1.8;">
-        เป้าหมาย 6 เดือน: <span style="color:var(--accent2)">Thai Phishing Dataset 20,000+ รายการ</span> · ทดลองใช้งาน SME 100 ราย<br>
-        เป้าหมาย 2 ปี: <span style="color:var(--accent)">Thai Threat Intelligence</span> · Context-aware Risk Analysis · Endpoint + Network + Cloud
-      </p>
     </div>
   </div>
 
-  <!-- SLIDE 7: TEAM + CTA -->
+  <!-- SLIDE 7: BUDGET -->
   <div class="slide" data-index="6">
-    <div class="slide-title">ทีม <span class="accent">Homeless</span></div>
-    <div class="slide-sub">LEAGUES OF CODE AI & CYBER SECURITY HACKATHON #2</div>
-    <div class="team-cards">
-      <div class="team-card">
-        <div class="avatar">ศก</div>
-        <div class="team-name">ศุภกร เขียวชอุ่ม</div>
-        <div class="team-role">Member 1</div>
+    <div class="slide-title">งบประมาณ <span class="text-cyan">Lean but Scalable</span></div>
+    <div class="slide-sub font-mono">Roadmap_&_Budget</div>
+    <div class="grid-3">
+      <div class="cyber-card" style="border-top: 2px solid var(--text-muted);">
+        <div class="font-mono" style="font-size: 10px; color:var(--text-muted); margin-bottom: 12px;">PHASE 01: HACKATHON</div>
+        <div class="font-mono" style="font-size: 24px; font-weight: 600; color:#fff;">2K - 5K <span style="font-size:14px;">THB</span></div>
+        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 16px;">(One-time Cost)</div>
+        <div style="font-size: 13px; color: #fff; line-height: 1.8;">
+          > LLM API สำหรับ Demo<br>
+          > Cloud VM ขนาดเล็ก
+        </div>
       </div>
-      <div class="team-card">
-        <div class="avatar">นก</div>
-        <div class="team-name">นกร จรเสมอ</div>
-        <div class="team-role">Member 2</div>
+      <div class="cyber-card" style="border-top: 2px solid var(--cyan); box-shadow: inset 0 0 15px rgba(0,240,255,0.1);">
+        <div class="font-mono text-cyan" style="font-size: 10px; margin-bottom: 12px;">PHASE 02: MVP (6 MONTHS)</div>
+        <div class="font-mono" style="font-size: 24px; font-weight: 600; color:var(--cyan);">8K - 15K <span style="font-size:14px;">THB/mo</span></div>
+        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 16px;">(รองรับ SME 50-100 ราย)</div>
+        <div style="font-size: 13px; color: #fff; line-height: 1.8;">
+          > Thai Phishing Dataset (20k+)<br>
+          > Cloud + DB + AI API
+        </div>
       </div>
-      <div class="team-card">
-        <div class="avatar">นฤ</div>
-        <div class="team-name">นกฤช อารีย์</div>
-        <div class="team-role">Member 3</div>
+      <div class="cyber-card" style="border-top: 2px solid var(--violet);">
+        <div class="font-mono text-violet" style="font-size: 10px; margin-bottom: 12px;">PHASE 03: PRODUCTION</div>
+        <div class="font-mono" style="font-size: 24px; font-weight: 600; color:#fff;">30K - 80K <span style="font-size:14px;">THB/mo</span></div>
+        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 16px;">(Scalable Infra)</div>
+        <div style="font-size: 13px; color: #fff; line-height: 1.8;">
+          > Auto-scaling Multi-service<br>
+          > ขยายสู่ Endpoint & Network
+        </div>
       </div>
-    </div>
-    <div class="cta-block">
-      <div class="cta-text">
-        เราเชื่อว่า <strong>Cybersecurity ไม่ควรเป็นสิทธิพิเศษ</strong><br>
-        ขององค์กรขนาดใหญ่เท่านั้น<br>
-        SME ไทยสร้าง GDP กว่า 35% ของประเทศ — พวกเขาสมควรได้รับการปกป้อง
-      </div>
-      <div class="cta-motto">Smart Protection. Stronger Business. 🛡️</div>
     </div>
   </div>
 
-</div><!-- end slides -->
+  <!-- SLIDE 8: TEAM -->
+  <div class="slide" data-index="7">
+    <div class="slide-title">Team <span class="text-cyan">Homeless</span></div>
+    <div class="slide-sub font-mono">System_Administrators</div>
+    
+    <div style="display:flex; gap:20px; margin-bottom:40px;">
+      <div class="terminal-card" style="min-width: 200px;">
+        <div class="terminal-header"><span style="color:#fff;">user_1</span></div>
+        <div class="terminal-body text-center" style="padding:16px;">
+          <div style="font-size:16px; font-weight:500; color:var(--cyan);">ศุภกร เขียวชอุ่ม</div>
+        </div>
+      </div>
+      <div class="terminal-card" style="min-width: 200px;">
+        <div class="terminal-header"><span style="color:#fff;">user_2</span></div>
+        <div class="terminal-body text-center" style="padding:16px;">
+          <div style="font-size:16px; font-weight:500; color:var(--cyan);">นกร จรเสมอ</div>
+        </div>
+      </div>
+      <div class="terminal-card" style="min-width: 200px;">
+        <div class="terminal-header"><span style="color:#fff;">user_3</span></div>
+        <div class="terminal-body text-center" style="padding:16px;">
+          <div style="font-size:16px; font-weight:500; color:var(--cyan);">นกฤช อารีย์</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="cyber-card" style="max-width: 700px; text-align: center; border-color: var(--cyan);">
+      <p style="font-size: 16px; color: #fff; line-height: 1.8; margin-bottom: 16px;">
+        "เราเชื่อว่า Cybersecurity ไม่ควรเป็นสิทธิพิเศษขององค์กรขนาดใหญ่<br>แต่ควรเป็นสิ่งที่ธุรกิจทุกขนาดเข้าถึงได้"
+      </p>
+      <div class="font-mono text-cyan" style="font-size: 14px; letter-spacing: 1px;">
+        > SMART PROTECTION. STRONGER BUSINESS. <span class="blink">_</span>
+      </div>
+    </div>
+  </div>
+
+</div>
 
 <!-- Navigation -->
 <div class="nav">
-  <button id="prevBtn">← PREV</button>
+  <button id="prevBtn">&lt; PREV</button>
   <div class="dots" id="dots"></div>
-  <button id="nextBtn">NEXT →</button>
+  <button id="nextBtn">NEXT &gt;</button>
 </div>
 
 <script>
-  // Cursor
-  const cursor = document.getElementById('cursor');
-  const cursorRing = document.getElementById('cursorRing');
+  // --- Matrix Rain Effect ---
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx = canvas.getContext('2d');
+  
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  // Characters used for the rain
+  const letters = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%^&*'.split('');
+  const fontSize = 14;
+  const columns = canvas.width / fontSize;
+  const drops = Array.from({ length: columns }).fill(1);
+
+  function drawMatrix() {
+    ctx.fillStyle = 'rgba(1, 6, 19, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = '#00f0ff'; // Cyan
+    ctx.font = fontSize + 'px monospace';
+    
+    for (let i = 0; i < drops.length; i++) {
+      const text = letters[Math.floor(Math.random() * letters.length)];
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }
+  setInterval(drawMatrix, 50);
+
+  // --- Custom Cyber Cursor ---
+  const cursorBox = document.getElementById('cursorBox');
+  const cursorDot = document.getElementById('cursorDot');
+  
   document.addEventListener('mousemove', e => {
-    cursor.style.left = e.clientX - 4 + 'px';
-    cursor.style.top = e.clientY - 4 + 'px';
-    cursorRing.style.left = e.clientX - 16 + 'px';
-    cursorRing.style.top = e.clientY - 16 + 'px';
+    cursorBox.style.left = e.clientX + 'px';
+    cursorBox.style.top = e.clientY + 'px';
+    cursorDot.style.left = e.clientX + 'px';
+    cursorDot.style.top = e.clientY + 'px';
   });
 
-  // Slides
+  document.addEventListener('mousedown', () => cursorBox.style.transform = 'translate(-50%, -50%) scale(0.8)');
+  document.addEventListener('mouseup', () => cursorBox.style.transform = 'translate(-50%, -50%) scale(1)');
+
+  // --- Slides Logic ---
   const slides = document.querySelectorAll('.slide');
   const total = slides.length;
   let current = 0;
-
-  document.getElementById('totalSlides').textContent = String(total).padStart(2,'0');
 
   // Create dots
   const dotsContainer = document.getElementById('dots');
@@ -909,12 +689,25 @@
   }
 
   function goTo(idx) {
+    if (idx === current || idx < 0 || idx >= total) return;
+    
     slides[current].classList.remove('active');
     slides[current].classList.add('prev');
-    setTimeout(() => slides[current].classList.remove('prev'), 600);
+    
+    // reset glitch animation for impact
+    const oldGlitch = slides[current].querySelector('.glitch');
+    if(oldGlitch) oldGlitch.style.animation = 'none';
 
-    current = (idx + total) % total;
+    setTimeout(() => {
+      slides[current].classList.remove('prev');
+    }, 600);
+
+    current = idx;
     slides[current].classList.add('active');
+    
+    // trigger glitch
+    const newGlitch = slides[current].querySelector('.glitch');
+    if(newGlitch) newGlitch.style.animation = '';
 
     document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i === current));
     document.getElementById('currentSlide').textContent = String(current + 1).padStart(2,'0');
@@ -929,15 +722,6 @@
     if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
   });
 
-  // Touch swipe
-  let startX = 0;
-  document.addEventListener('touchstart', e => startX = e.touches[0].clientX);
-  document.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) > 50) goTo(current + (dx < 0 ? 1 : -1));
-  });
-
-  // Init progress
   document.getElementById('progressBar').style.width = (1/total*100) + '%';
 </script>
 </body>
