@@ -4,11 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GuardSME — AI Cybersecurity for Thai SME</title>
-<!-- เปลี่ยนฟอนต์ให้ดูล้ำขึ้น: Chakra Petch สำหรับหัวข้อ, Prompt สำหรับเนื้อหา, Share Tech Mono สำหรับโค้ด -->
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Prompt:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* Deep Cyber Blue Theme */
     --bg-dark: #030914;
     --surface: #0a192f;
     --card: rgba(10, 25, 47, 0.75);
@@ -22,9 +20,7 @@
     --text-main: #ccd6f6;
     --text-muted: #8892b0;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   body {
     font-family: 'Prompt', sans-serif;
     background-color: var(--bg-dark);
@@ -34,8 +30,6 @@
     width: 100vw;
     cursor: none;
   }
-
-  /* --- New Effect: Radar Grid Background --- */
   .radar-grid {
     position: fixed;
     inset: 0;
@@ -59,8 +53,6 @@
     0% { top: -50%; }
     100% { top: 100%; }
   }
-
-  /* Custom Cyber Cursor */
   .cursor-crosshair {
     position: fixed;
     width: 30px; height: 30px;
@@ -86,14 +78,7 @@
     pointer-events: none;
     z-index: 10000;
   }
-
-  /* Slides Container */
-  .slides {
-    position: relative;
-    width: 100%; height: 100vh;
-    z-index: 5;
-  }
-
+  .slides { position: relative; width: 100%; height: 100vh; z-index: 5; }
   .slide {
     position: absolute;
     inset: 0;
@@ -107,21 +92,10 @@
     transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
     pointer-events: none;
   }
-  .slide.active {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    pointer-events: all;
-  }
-  .slide.prev {
-    opacity: 0;
-    transform: translateY(-30px) scale(0.98);
-  }
-
-  /* Typography */
+  .slide.active { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+  .slide.prev { opacity: 0; transform: translateY(-30px) scale(0.98); }
   .font-tech { font-family: 'Chakra Petch', sans-serif; }
   .font-mono { font-family: 'Share Tech Mono', monospace; }
-
-  /* Glitch Text (Refined) */
   .glitch-wrapper { position: relative; display: inline-block; }
   .glitch {
     font-size: 85px;
@@ -137,7 +111,6 @@
   }
   .glitch::before { left: 3px; text-shadow: -2px 0 var(--red); animation: glitch-1 2.5s infinite linear alternate-reverse; }
   .glitch::after { left: -3px; text-shadow: -2px 0 var(--cyan); animation: glitch-2 3s infinite linear alternate-reverse; }
-
   @keyframes glitch-1 {
     0% { clip-path: inset(20% 0 80% 0); }
     20% { clip-path: inset(60% 0 10% 0); }
@@ -154,14 +127,7 @@
     80% { clip-path: inset(20% 0 50% 0); }
     100% { clip-path: inset(50% 0 30% 0); }
   }
-
-  .slide-title {
-    font-size: 46px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    text-align: center;
-    color: #fff;
-  }
+  .slide-title { font-size: 46px; font-weight: 600; margin-bottom: 8px; text-align: center; color: #fff; }
   .slide-sub {
     font-size: 14px;
     color: var(--cyan);
@@ -175,14 +141,10 @@
     content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
     width: 60px; height: 2px; background: var(--cyan); box-shadow: 0 0 10px var(--cyan);
   }
-
   .text-cyan { color: var(--cyan); text-shadow: 0 0 10px var(--cyan-dim); }
   .text-red { color: var(--red); text-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
-
-  /* Cyber Card with Pulse Border */
   .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%; max-width: 1000px; }
   .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; width: 100%; max-width: 1000px; }
-
   .cyber-card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -202,8 +164,6 @@
     transform: translateY(-5px);
   }
   .cyber-card:hover::before { background: var(--cyan); box-shadow: 0 0 15px var(--cyan); }
-
-  /* --- New Effect: Terminal Typewriter --- */
   .terminal-card {
     background: #020617;
     border: 1px solid var(--border);
@@ -223,7 +183,6 @@
   .tdot:nth-child(2) { background: #f59e0b; }
   .tdot:nth-child(3) { background: #10b981; }
   .terminal-body { padding: 24px; font-size: 14px; line-height: 1.7; }
-  
   .typewriter-text {
     overflow: hidden;
     white-space: nowrap;
@@ -235,8 +194,6 @@
   }
   @keyframes typing { from { width: 0 } to { width: 100% } }
   @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: var(--cyan); } }
-
-  /* UI Shell */
   .nav {
     position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
     display: flex; align-items: center; gap: 24px; z-index: 100;
@@ -253,50 +210,41 @@
   .dots { display: flex; gap: 10px; align-items: center; }
   .dot { width: 24px; height: 3px; background: var(--border); transition: 0.3s; cursor: pointer; }
   .dot.active { background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
-
   .ui-element { position: fixed; font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-muted); z-index: 100; letter-spacing: 1px; }
   .top-left { top: 35px; left: 45px; line-height: 1.6; }
   .top-right { top: 35px; right: 45px; text-align: right; line-height: 1.6; }
-
   .progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 2px; background: #020617; z-index: 200; }
   .progress-bar { height: 100%; background: var(--cyan); box-shadow: 0 0 15px var(--cyan); transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
-
-  /* Table Style */
   .tech-table { width: 100%; border-collapse: collapse; font-size: 14px; }
   .tech-table th, .tech-table td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border); }
   .tech-table th { color: var(--cyan); font-weight: 500; font-family: 'Share Tech Mono', monospace; font-size: 12px; }
   .tech-table tr:hover td { background: rgba(0, 229, 255, 0.03); }
-
   .case-tag { padding: 4px 10px; font-size: 11px; font-family: 'Share Tech Mono'; border-radius: 4px; font-weight: bold; }
   .tag-critical { background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid var(--red); box-shadow: 0 0 10px rgba(239,68,68,0.2); }
   .tag-high { background: rgba(139, 92, 246, 0.15); color: var(--violet); border: 1px solid var(--violet); box-shadow: 0 0 10px rgba(139,92,246,0.2); }
-
   .blink { animation: blinker 1s linear infinite; }
   @keyframes blinker { 50% { opacity: 0; } }
 </style>
 </head>
 <body>
-
 <div class="radar-grid"></div>
 <div class="radar-sweep"></div>
-
 <div class="cursor-crosshair" id="cursorBox"></div>
 <div class="cursor-dot" id="cursorDot"></div>
-
 <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+
 <div class="ui-element top-left">
   <span class="text-cyan font-tech" style="font-size:14px; font-weight:600;">SYS.CORE: ONLINE</span><br>
-  TEAM: HOMELESS[cite: 1]<br>
-  OP: LEAGUES OF CODE #2[cite: 1]
+  TEAM: HOMELESS<br>
+  OP: LEAGUES OF CODE #2
 </div>
+
 <div class="ui-element top-right">
   SEC_LEVEL: <span style="color:#fff;">ENCRYPTED</span><br>
   SLIDE <span id="currentSlide" class="text-cyan" style="font-size:14px;">01</span> / <span id="totalSlides">08</span>
 </div>
 
 <div class="slides" id="slides">
-
-  <!-- SLIDE 1: HERO -->
   <div class="slide active" data-index="0">
     <div class="glitch-wrapper">
       <div class="font-tech glitch" data-text="GuardSME">GuardSME</div>
@@ -304,368 +252,235 @@
     <div class="slide-sub font-mono">AI CYBERSECURITY PLATFORM</div>
     <div class="font-tech" style="font-size: 26px; color: var(--text-main); font-weight: 400; text-align: center; margin-top: 10px; line-height: 1.5;">
       ระบบรักษาความปลอดภัยไซเบอร์อัจฉริยะ<br>
-      สำหรับธุรกิจ SME ไทยที่ <span class="text-cyan font-tech" style="font-size: 30px; font-weight: 600;">ไม่ต้องมี IT Team</span>[cite: 1]
+      สำหรับธุรกิจ SME ไทยที่ <span class="text-cyan font-tech" style="font-size: 30px; font-weight: 600;">ไม่ต้องมี IT Team</span>
     </div>
-    
     <div style="display: flex; gap: 30px; margin-top: 60px;">
       <div style="padding: 20px 30px; background: rgba(0,0,0,0.4); border-left: 3px solid var(--cyan); border-radius: 0 8px 8px 0;">
         <div class="font-mono text-cyan" style="font-size: 32px; font-weight: 700;">3M+</div>
-        <div class="font-tech" style="font-size: 13px; color: var(--text-muted); letter-spacing: 1px;">SME THAILAND[cite: 1]</div>
+        <div class="font-tech" style="font-size: 13px; color: var(--text-muted); letter-spacing: 1px;">SME THAILAND</div>
       </div>
       <div style="padding: 20px 30px; background: rgba(0,0,0,0.4); border-left: 3px solid var(--cyan); border-radius: 0 8px 8px 0;">
         <div class="font-mono text-cyan" style="font-size: 32px; font-weight: 700;">35%</div>
-        <div class="font-tech" style="font-size: 13px; color: var(--text-muted); letter-spacing: 1px;">NATIONAL GDP[cite: 1]</div>
+        <div class="font-tech" style="font-size: 13px; color: var(--text-muted); letter-spacing: 1px;">NATIONAL GDP</div>
       </div>
       <div style="padding: 20px 30px; background: rgba(0,0,0,0.4); border-left: 3px solid var(--cyan); border-radius: 0 8px 8px 0;">
         <div class="font-mono text-cyan" style="font-size: 32px; font-weight: 700;">24/7</div>
-        <div class="font-tech" style="font-size: 13px; color: var(--text-muted); letter-spacing: 1px;">AI PROTECTION[cite: 1]</div>
+        <div class="font-tech" style="font-size: 13px; color: var(--text-muted); letter-spacing: 1px;">AI PROTECTION</div>
       </div>
     </div>
   </div>
 
-  <!-- SLIDE 2: PROBLEM -->
   <div class="slide" data-index="1">
-    <div class="slide-title font-tech">ช่องโหว่ความปลอดภัยของ <span class="text-cyan">SME ไทย</span>[cite: 1]</div>
+    <div class="slide-title font-tech">ช่องโหว่ความปลอดภัยของ <span class="text-cyan">SME ไทย</span></div>
     <div class="slide-sub font-mono">TARGET VULNERABILITIES</div>
     <div class="grid-3">
       <div class="cyber-card">
         <div style="font-size: 32px; margin-bottom: 16px; color:var(--text-main);">💸</div>
         <div class="font-tech" style="font-size: 22px; font-weight: 600; margin-bottom: 8px; color:#fff;">ต้นทุนระบบสูงลิบ</div>
-        <div style="font-size: 15px; color: var(--text-muted); line-height: 1.6;">โซลูชันระดับ Enterprise (Palo Alto, CrowdStrike) มีราคาแพงเกินขีดจำกัดที่ SME จะลงทุนไหว[cite: 1]</div>
+        <div style="font-size: 15px; color: var(--text-muted); line-height: 1.6;">โซลูชันระดับ Enterprise ราคาแพงเกินขีดจำกัดที่ SME จะลงทุนไหว</div>
       </div>
       <div class="cyber-card">
         <div style="font-size: 32px; margin-bottom: 16px; color:var(--text-main);">👨‍💻</div>
         <div class="font-tech" style="font-size: 22px; font-weight: 600; margin-bottom: 8px; color:#fff;">ขาดบุคลากรเฉพาะทาง</div>
-        <div style="font-size: 15px; color: var(--text-muted); line-height: 1.6;">ธุรกิจขนาดเล็กไม่มีทีม IT Security โดยตรง ทำให้ตรวจจับ มองเห็น และรับมือกับภัยคุกคามไม่ทันเวลา[cite: 1]</div>
+        <div style="font-size: 15px; color: var(--text-muted); line-height: 1.6;">ไม่มีทีม IT Security โดยตรง ทำให้ตรวจจับและรับมือภัยคุกคามไม่ทันเวลา</div>
       </div>
       <div class="cyber-card" style="border-color: rgba(239, 68, 68, 0.3);">
         <div style="font-size: 32px; margin-bottom: 16px; color: var(--red);">⚠️</div>
         <div class="font-tech" style="font-size: 22px; font-weight: 600; margin-bottom: 8px; color: var(--red);">ภัยคุกคามเฉพาะถิ่น</div>
-        <div style="font-size: 15px; color: var(--text-muted); line-height: 1.6;">Phishing ภาษาไทย, SMS หลอกลวง, และ LINE Official ปลอม ซึ่งระบบต่างชาติตรวจจับบริบทภาษาได้ยาก[cite: 1]</div>
+        <div style="font-size: 15px; color: var(--text-muted); line-height: 1.6;">Phishing ภาษาไทย และ SMS หลอกลวง ซึ่งระบบต่างชาติตรวจจับได้ยาก</div>
       </div>
     </div>
   </div>
 
-  <!-- SLIDE 3: SOLUTION -->
   <div class="slide" data-index="2">
-    <div class="slide-title font-tech">ยกระดับสู่ <span class="text-cyan">Virtual Security Team</span>[cite: 1]</div>
+    <div class="slide-title font-tech">ยกระดับสู่ <span class="text-cyan">Virtual Security Team</span></div>
     <div class="slide-sub font-mono">SOLUTION ARCHITECTURE</div>
     <div class="grid-2" style="align-items: center;">
       <div>
-        <h3 class="font-tech" style="font-size: 26px; font-weight: 600; margin-bottom: 16px; color: #fff;">
-          AI ที่อธิบายความเสี่ยง <span class="text-cyan">"เป็นภาษาไทย"</span>[cite: 1]
-        </h3>
-        <p style="font-size: 16px; color: var(--text-muted); line-height: 1.8; margin-bottom: 24px;">
-          บอกลา Log ไฟล์ที่ซับซ้อน GuardSME ทำงานแทนทีม Security ตลอด 24 ชม. สรุปความเสี่ยงและแนวทางแก้ไขให้เจ้าของธุรกิจตัดสินใจได้ทันที โดยไม่ต้องมีพื้นฐาน IT[cite: 1]
-        </p>
-        <div class="font-mono" style="color: var(--cyan); font-size: 13px; margin-bottom: 12px; letter-spacing: 1px;">> KEY FEATURES:</div>
+        <h3 class="font-tech" style="font-size: 26px; font-weight: 600; margin-bottom: 16px; color: #fff;">AI ที่อธิบายความเสี่ยง <span class="text-cyan">"เป็นภาษาไทย"</span></h3>
+        <p style="font-size: 16px; color: var(--text-muted); line-height: 1.8; margin-bottom: 24px;">บอกลา Log ไฟล์ที่ซับซ้อน GuardSME ทำงานแทนทีม Security ตลอด 24 ชม. สรุปแนวทางแก้ไขให้เข้าใจง่าย</p>
         <ul style="list-style: none; font-size: 15px; line-height: 2.2; padding-left: 16px; border-left: 2px solid var(--border);">
-          <li><span class="text-cyan" style="margin-right:8px;">■</span> <strong style="color:#fff;">Plug & Play:</strong> ติดตั้งและใช้งานง่าย[cite: 1]</li>
-          <li><span class="text-cyan" style="margin-right:8px;">■</span> <strong style="color:#fff;">Real-time Alert:</strong> ตรวจจับและแจ้งเตือนทันที[cite: 1]</li>
-          <li><span class="text-cyan" style="margin-right:8px;">■</span> <strong style="color:#fff;">Explainable AI:</strong> เข้าใจง่าย นำไปปฏิบัติได้จริง[cite: 1]</li>
+          <li><span class="text-cyan" style="margin-right:8px;">■</span> <strong style="color:#fff;">Plug & Play:</strong> ติดตั้งและใช้งานง่าย</li>
+          <li><span class="text-cyan" style="margin-right:8px;">■</span> <strong style="color:#fff;">Real-time Alert:</strong> ตรวจจับและแจ้งเตือนทันที</li>
+          <li><span class="text-cyan" style="margin-right:8px;">■</span> <strong style="color:#fff;">Explainable AI:</strong> เข้าใจง่าย นำไปปฏิบัติได้จริง</li>
         </ul>
       </div>
-      
-      <!-- Typewriter Terminal -->
       <div class="terminal-card">
         <div class="terminal-header">
           <div style="display:flex; gap:6px;"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>
           <span class="font-mono" style="margin-left: 10px;">root@guardsme:~# tail -f /var/log/ai_engine.log</span>
         </div>
         <div class="terminal-body font-mono">
-          <div style="color: var(--text-muted); margin-bottom: 8px;">[1] DETECT: <span style="color:#fff;">Ingesting Data Sources...</span>[cite: 1]</div>
-          <div style="color: var(--text-muted); margin-bottom: 8px;">[2] ANALYZE: <span style="color:#fff;">Executing Multi-Model Ensemble...</span>[cite: 1]</div>
-          <div style="color: var(--text-muted); margin-bottom: 8px;">[3] DECIDE: <span style="color:#fff;">Generating Unified Risk Score...</span>[cite: 1]</div>
-          <div class="typewriter-text" style="color: var(--cyan); font-size: 15px;">> [4] ACT: Action Executed & Notified.[cite: 1]</div>
+          <div style="color: var(--text-muted); margin-bottom: 8px;">[1] DETECT: <span style="color:#fff;">Ingesting Data Sources...</span></div>
+          <div style="color: var(--text-muted); margin-bottom: 8px;">[2] ANALYZE: <span style="color:#fff;">Executing Multi-Model Ensemble...</span></div>
+          <div style="color: var(--text-muted); margin-bottom: 8px;">[3] DECIDE: <span style="color:#fff;">Generating Unified Risk Score...</span></div>
+          <div class="typewriter-text" style="color: var(--cyan); font-size: 15px;">> [4] ACT: Action Executed & Notified.</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- SLIDE 4: TECH -->
   <div class="slide" data-index="3">
-    <div class="slide-title font-tech">ขุมพลัง <span class="text-cyan">Multi-Model AI</span>[cite: 1]</div>
+    <div class="slide-title font-tech">ขุมพลัง <span class="text-cyan">Multi-Model AI</span></div>
     <div class="slide-sub font-mono">CORE ENGINE MODULES</div>
     <div class="cyber-card" style="width: 100%; max-width: 1000px; padding: 24px;">
       <table class="tech-table">
         <thead>
-          <tr>
-            <th>ID / MODULE</th>
-            <th>ALGORITHM & TECHNOLOGY</th>
-            <th>DATA INPUT / FEATURES</th>
-          </tr>
+          <tr><th>ID / MODULE</th><th>ALGORITHM & TECHNOLOGY</th><th>DATA INPUT / FEATURES</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="font-tech" style="color:#fff; font-size:16px;">[ M01 ] Phishing Detection[cite: 1]</td>
-            <td>Fine-tuned WangchanBERTa (Thai BERT)[cite: 1]</td>
-            <td>20,000+ Thai SMS/Email (Thaipoliceonline)[cite: 1]</td>
-          </tr>
-          <tr>
-            <td class="font-tech" style="color:#fff; font-size:16px;">[ M02 ] Anomaly Login[cite: 1]</td>
-            <td>Isolation Forest + LSTM Autoencoder[cite: 1]</td>
-            <td>Time, IP, Location, Device logs[cite: 1]</td>
-          </tr>
-          <tr>
-            <td class="font-tech" style="color:#fff; font-size:16px;">[ M03 ] Vulnerability Scan[cite: 1]</td>
-            <td>Graph Neural Network (GNN) + OpenVAS[cite: 1]</td>
-            <td>CVE Database, Network topology[cite: 1]</td>
-          </tr>
+          <tr><td class="font-tech" style="color:#fff; font-size:16px;">[ M01 ] Phishing Detection</td><td>Fine-tuned WangchanBERTa</td><td>Thai SMS/Email Dataset</td></tr>
+          <tr><td class="font-tech" style="color:#fff; font-size:16px;">[ M02 ] Anomaly Login</td><td>Isolation Forest + LSTM</td><td>Time, IP, Device logs</td></tr>
+          <tr><td class="font-tech" style="color:#fff; font-size:16px;">[ M03 ] Vulnerability Scan</td><td>GNN + OpenVAS</td><td>CVE Database, Topology</td></tr>
           <tr style="background: rgba(0, 229, 255, 0.05);">
-            <td class="font-tech text-cyan" style="font-size:16px;">[ M04 ] Context AI (Brain)[cite: 1]</td>
-            <td class="text-cyan">Claude (LLM) + Prompt Engineering[cite: 1]</td>
-            <td class="text-cyan">Risk Fusion: วิเคราะห์ภาพรวมเชิงบริบท[cite: 1]</td>
+            <td class="font-tech text-cyan" style="font-size:16px;">[ M04 ] Context AI (Brain)</td><td class="text-cyan">Claude (LLM) + Prompt Eng.</td><td class="text-cyan">Unified Risk Analysis</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- SLIDE 5: OUTPUT EXAMPLES -->
   <div class="slide" data-index="4">
-    <div class="slide-title font-tech">การตอบสนอง <span class="text-cyan">Real-time</span>[cite: 1]</div>
+    <div class="slide-title font-tech">การตอบสนอง <span class="text-cyan">Real-time</span></div>
     <div class="slide-sub font-mono">INCIDENT RESPONSE EXAMPLES</div>
     <div class="grid-2">
-      <!-- Terminal Alert 1 -->
       <div class="terminal-card">
         <div class="terminal-header" style="border-bottom-color: var(--red); background: rgba(239, 68, 68, 0.05);">
           <div style="display:flex; gap:6px;"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>
-          <span class="font-mono" style="color: var(--red); margin-left: 10px; font-weight: bold;">ALERT: DATA_LEAK_RISK</span>[cite: 1]
+          <span class="font-mono" style="color: var(--red); margin-left: 10px; font-weight: bold;">ALERT: DATA_LEAK_RISK</span>
         </div>
         <div class="terminal-body">
           <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
-            <span class="font-mono" style="color:var(--text-muted); font-size: 12px;">TIME: 02:13 น. (นอกเวลาทำงาน)[cite: 1]</span>
-            <span class="case-tag tag-critical blink">CRITICAL 0.89</span>
+            <span class="font-mono" style="color:var(--text-muted); font-size: 12px;">TIME: 02:13 น.</span>
+            <span class="case-tag tag-critical blink">CRITICAL</span>
           </div>
           <div style="font-size: 14px; margin-bottom: 16px; line-height: 1.8;">
-            <strong class="text-red">> Incident:</strong> ฝ่ายขายดาวน์โหลดข้อมูลลูกค้า 148 ไฟล์ใน 10 นาที[cite: 1]<br>
-            <strong class="text-cyan">> Context AI:</strong> ความเสี่ยงสูงต่อข้อมูลลูกค้า (PDPA) รั่วไหล[cite: 1]
+            <strong class="text-red">> Incident:</strong> ดาวน์โหลดข้อมูลลูกค้า 148 ไฟล์ใน 10 นาที<br>
+            <strong class="text-cyan">> Context AI:</strong> ความเสี่ยงสูงต่อ PDPA รั่วไหล
           </div>
-          <div class="font-mono text-cyan typewriter-text" style="border-top: 1px dashed var(--border); padding-top: 16px; font-size:13px; line-height: 1.6;">
-            [ ACTION TAKEN ]<br>
-            ✓ Lock Account (ระงับบัญชีชั่วคราว)[cite: 1]<br>
-            ✓ Stop Download & Notify IT[cite: 1]
+          <div class="font-mono text-cyan" style="border-top: 1px dashed var(--border); padding-top: 16px; font-size:13px;">
+            [ ACTION TAKEN ]<br>✓ Lock Account<br>✓ Stop Download
           </div>
         </div>
       </div>
-      
-      <!-- Terminal Alert 2 -->
       <div class="terminal-card">
         <div class="terminal-header" style="border-bottom-color: var(--violet); background: rgba(139, 92, 246, 0.05);">
           <div style="display:flex; gap:6px;"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>
-          <span class="font-mono" style="color: var(--violet); margin-left: 10px; font-weight: bold;">ALERT: PHISHING_ATTACK</span>[cite: 1]
+          <span class="font-mono" style="color: var(--violet); margin-left: 10px; font-weight: bold;">ALERT: PHISHING_ATTACK</span>
         </div>
         <div class="terminal-body">
           <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
-            <span class="font-mono" style="color:var(--text-muted); font-size: 12px;">TIME: 10:42 น.[cite: 1]</span>
-            <span class="case-tag tag-high">HIGH RISK 0.91</span>
+            <span class="font-mono" style="color:var(--text-muted); font-size: 12px;">TIME: 10:42 น.</span>
+            <span class="case-tag tag-high">HIGH RISK</span>
           </div>
           <div style="font-size: 14px; margin-bottom: 16px; line-height: 1.8;">
-            <strong style="color:var(--violet);">> Incident:</strong> บัญชีได้รับอีเมลปลอมอ้างว่า "บัญชีถูกระงับ"[cite: 1]<br>
-            <strong class="text-cyan">> Context AI:</strong> รูปแบบหลอกลวงภาษาไทย เสี่ยงต่อการขโมย Credential[cite: 1]
+            <strong style="color:var(--violet);">> Incident:</strong> ได้รับอีเมลปลอมอ้างว่าบัญชีถูกระงับ<br>
+            <strong class="text-cyan">> Context AI:</strong> รูปแบบหลอกลวงเสี่ยงขโมยรหัสผ่าน
           </div>
-          <div class="font-mono text-cyan typewriter-text" style="border-top: 1px dashed var(--border); padding-top: 16px; font-size:13px; line-height: 1.6; animation-delay: 0.5s;">
-            [ ACTION TAKEN ]<br>
-            ✓ Block URL (บล็อกลิงก์อันตรายอัตโนมัติ)[cite: 1]<br>
-            ✓ Display Warning to User[cite: 1]
+          <div class="font-mono text-cyan" style="border-top: 1px dashed var(--border); padding-top: 16px; font-size:13px;">
+            [ ACTION TAKEN ]<br>✓ Block URL<br>✓ Warning Displayed
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- SLIDE 6: SECURITY / PDPA -->
   <div class="slide" data-index="5">
-    <div class="slide-title font-tech">มาตรฐานความปลอดภัย & <span class="text-cyan">PDPA</span>[cite: 1]</div>
-    <div class="slide-sub font-mono">COMPLIANCE & SYSTEM ARCHITECTURE</div>
+    <div class="slide-title font-tech">มาตรฐานความปลอดภัย & <span class="text-cyan">PDPA</span></div>
+    <div class="slide-sub font-mono">COMPLIANCE & ARCHITECTURE</div>
     <div class="grid-3">
       <div class="cyber-card">
-        <div class="font-mono text-cyan" style="font-size:13px; margin-bottom:10px; font-weight: bold;">01. PURPLE TEAM[cite: 1]</div>
-        <div class="font-tech" style="font-size: 20px; font-weight: 600; margin-bottom: 12px; color:#fff;">Continuous Defense</div>
-        <div style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
-          ผสานการทำงานระหว่าง Red Team (จำลองการโจมตี) และ Blue Team (ตรวจจับ) สร้าง Feedback Loop เพื่อปรับปรุงความแม่นยำอย่างต่อเนื่อง[cite: 1]
-        </div>
+        <div class="font-mono text-cyan" style="font-size:11px; margin-bottom:10px;">01. DEFENSE</div>
+        <div class="font-tech" style="font-size: 20px; font-weight: 600; color:#fff;">Purple Team</div>
+        <div style="font-size: 14px; color: var(--text-muted); margin-top:12px;">จำลองการโจมตีและตรวจจับเพื่อปรับปรุงความแม่นยำตลอดเวลา</div>
       </div>
       <div class="cyber-card">
-        <div class="font-mono text-cyan" style="font-size:13px; margin-bottom:10px; font-weight: bold;">02. ANTI-EVASION[cite: 1]</div>
-        <div class="font-tech" style="font-size: 20px; font-weight: 600; margin-bottom: 12px; color:#fff;">Adversarial AI Risk[cite: 1]</div>
-        <div style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
-          รับมือการบิดเบือนข้อความเพื่อหลบหลีกระบบ ด้วยเทคนิค Ensemble Model และ Adversarial Training จากข้อมูลอัปเดตใหม่[cite: 1]
-        </div>
+        <div class="font-mono text-cyan" style="font-size:11px; margin-bottom:10px;">02. RESILIENCE</div>
+        <div class="font-tech" style="font-size: 20px; font-weight: 600; color:#fff;">Anti-Evasion</div>
+        <div style="font-size: 14px; color: var(--text-muted); margin-top:12px;">รับมือ AI ฝั่งโจมตีด้วยเทคนิค Ensemble และ Adversarial Training</div>
       </div>
       <div class="cyber-card">
-        <div class="font-mono text-cyan" style="font-size:13px; margin-bottom:10px; font-weight: bold;">03. DATA PRIVACY[cite: 1]</div>
-        <div class="font-tech" style="font-size: 20px; font-weight: 600; margin-bottom: 12px; color:#fff;">PDPA Compliant[cite: 1]</div>
-        <div style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
-          ลบข้อมูลระบุตัวตน (Anonymize) ก่อน Train Model พร้อมแยก Data Isolated ของ SME แต่ละราย และเข้ารหัส AES-256 / TLS 1.3[cite: 1]
-        </div>
+        <div class="font-mono text-cyan" style="font-size:11px; margin-bottom:10px;">03. PRIVACY</div>
+        <div class="font-tech" style="font-size: 20px; font-weight: 600; color:#fff;">Data Anonymize</div>
+        <div style="font-size: 14px; color: var(--text-muted); margin-top:12px;">แยกข้อมูลและปกปิดตัวตนก่อน Train Model ตามมาตรฐาน PDPA</div>
       </div>
     </div>
   </div>
 
-  <!-- SLIDE 7: BUDGET -->
   <div class="slide" data-index="6">
-    <div class="slide-title font-tech">เป้าหมายแบบ <span class="text-cyan">Lean but Scalable</span>[cite: 1]</div>
+    <div class="slide-title font-tech">เป้าหมายแบบ <span class="text-cyan">Lean & Scalable</span></div>
     <div class="slide-sub font-mono">ROADMAP & BUDGET</div>
     <div class="grid-3">
-      <div class="cyber-card" style="border-top: 3px solid var(--text-muted);">
-        <div class="font-mono" style="font-size: 11px; color:var(--text-muted); margin-bottom: 16px; letter-spacing: 1px;">PHASE 01: HACKATHON[cite: 1]</div>
-        <div class="font-mono" style="font-size: 28px; font-weight: 700; color:#fff; margin-bottom: 4px;">2K-5K <span style="font-size:16px;">THB</span>[cite: 1]</div>
-        <div class="font-tech" style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">(ต้นทุนครั้งเดียว)[cite: 1]</div>
-        <div style="font-size: 14px; color: #fff; line-height: 1.8;">
-          <span class="text-cyan">></span> LLM API สำหรับ Demo[cite: 1]<br>
-          <span class="text-cyan">></span> Cloud VM ขนาดเล็ก[cite: 1]
-        </div>
+      <div class="cyber-card">
+        <div class="font-mono text-muted" style="font-size: 11px;">PHASE 01: HACKATHON</div>
+        <div class="font-mono" style="font-size: 28px; font-weight: 700; color:#fff;">2K-5K <span style="font-size:14px;">THB</span></div>
+        <div style="font-size: 14px; color: #fff; margin-top:20px;">LLM API + Small Cloud VM</div>
       </div>
-      <div class="cyber-card" style="border-top: 3px solid var(--cyan); box-shadow: inset 0 0 20px rgba(0,229,255,0.1);">
-        <div class="font-mono text-cyan" style="font-size: 11px; margin-bottom: 16px; letter-spacing: 1px; font-weight: bold;">PHASE 02: MVP (6 MONTHS)[cite: 1]</div>
-        <div class="font-mono text-cyan" style="font-size: 28px; font-weight: 700; margin-bottom: 4px;">8K-15K <span style="font-size:16px;">THB/m</span>[cite: 1]</div>
-        <div class="font-tech" style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">(ทดลองระบบ SME 50-100 ราย)[cite: 1]</div>
-        <div style="font-size: 14px; color: #fff; line-height: 1.8;">
-          <span class="text-cyan">></span> Cloud + Database + AI API[cite: 1]<br>
-          <span class="text-cyan">></span> สร้าง Thai Phishing Dataset (20k+)[cite: 1]
-        </div>
+      <div class="cyber-card" style="border-top: 2px solid var(--cyan);">
+        <div class="font-mono text-cyan" style="font-size: 11px;">PHASE 02: MVP</div>
+        <div class="font-mono text-cyan" style="font-size: 28px; font-weight: 700;">8K-15K <span style="font-size:14px;">THB/m</span></div>
+        <div style="font-size: 14px; color: #fff; margin-top:20px;">Support 50-100 SMEs</div>
       </div>
-      <div class="cyber-card" style="border-top: 3px solid var(--violet);">
-        <div class="font-mono text-violet" style="font-size: 11px; margin-bottom: 16px; letter-spacing: 1px; font-weight: bold;">PHASE 03: PRODUCTION[cite: 1]</div>
-        <div class="font-mono" style="font-size: 28px; font-weight: 700; color:#fff; margin-bottom: 4px;">30K-80K <span style="font-size:16px;">THB/m</span>[cite: 1]</div>
-        <div class="font-tech" style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">(ขยายการใช้งานเชิงพาณิชย์)[cite: 1]</div>
-        <div style="font-size: 14px; color: #fff; line-height: 1.8;">
-          <span class="text-cyan">></span> Auto-scaling Infra[cite: 1]<br>
-          <span class="text-cyan">></span> ขยายสู่ Endpoint & Network[cite: 1]
-        </div>
+      <div class="cyber-card">
+        <div class="font-mono text-violet" style="font-size: 11px;">PHASE 03: PROD</div>
+        <div class="font-mono" style="font-size: 28px; font-weight: 700; color:#fff;">30K-80K <span style="font-size:14px;">THB/m</span></div>
+        <div style="font-size: 14px; color: #fff; margin-top:20px;">Commercial Auto-scaling</div>
       </div>
     </div>
   </div>
 
-  <!-- SLIDE 8: TEAM -->
   <div class="slide" data-index="7">
-    <div class="slide-title font-tech">Team <span class="text-cyan">Homeless</span>[cite: 1]</div>
+    <div class="slide-title font-tech">Team <span class="text-cyan">Homeless</span></div>
     <div class="slide-sub font-mono">SYSTEM ADMINISTRATORS</div>
-    
     <div style="display:flex; gap:24px; margin-bottom:50px;">
-      <div class="terminal-card" style="min-width: 220px; transition: 0.3s; cursor: crosshair;">
-        <div class="terminal-header" style="background: rgba(0, 229, 255, 0.1); border-bottom-color: var(--cyan);">
-          <span class="font-mono text-cyan" style="font-weight:bold;">> MBR_01</span>
-        </div>
-        <div class="terminal-body text-center" style="padding:20px;">
-          <div class="font-tech" style="font-size:20px; font-weight:600; color:#fff;">ศุภกร เขียวชอุ่ม[cite: 1]</div>
-        </div>
-      </div>
-      <div class="terminal-card" style="min-width: 220px; transition: 0.3s; cursor: crosshair;">
-        <div class="terminal-header" style="background: rgba(0, 229, 255, 0.1); border-bottom-color: var(--cyan);">
-          <span class="font-mono text-cyan" style="font-weight:bold;">> MBR_02</span>
-        </div>
-        <div class="terminal-body text-center" style="padding:20px;">
-          <div class="font-tech" style="font-size:20px; font-weight:600; color:#fff;">นกร จรเสมอ[cite: 1]</div>
-        </div>
-      </div>
-      <div class="terminal-card" style="min-width: 220px; transition: 0.3s; cursor: crosshair;">
-        <div class="terminal-header" style="background: rgba(0, 229, 255, 0.1); border-bottom-color: var(--cyan);">
-          <span class="font-mono text-cyan" style="font-weight:bold;">> MBR_03</span>
-        </div>
-        <div class="terminal-body text-center" style="padding:20px;">
-          <div class="font-tech" style="font-size:20px; font-weight:600; color:#fff;">นกฤช อารีย์[cite: 1]</div>
-        </div>
-      </div>
+      <div class="terminal-card" style="min-width: 200px;"><div class="terminal-header">MBR_01</div><div class="terminal-body font-tech" style="color:#fff;">ศุภกร เขียวชอุ่ม</div></div>
+      <div class="terminal-card" style="min-width: 200px;"><div class="terminal-header">MBR_02</div><div class="terminal-body font-tech" style="color:#fff;">นกร จรเสมอ</div></div>
+      <div class="terminal-card" style="min-width: 200px;"><div class="terminal-header">MBR_03</div><div class="terminal-body font-tech" style="color:#fff;">นกฤช อารีย์</div></div>
     </div>
-    
-    <div style="max-width: 800px; text-align: center;">
-      <p class="font-tech" style="font-size: 20px; color: var(--text-main); line-height: 1.8; margin-bottom: 20px;">
-        "เราเชื่อว่า Cybersecurity ไม่ควรเป็นสิทธิพิเศษขององค์กรขนาดใหญ่<br>
-        แต่ควรเป็นสิ่งที่ธุรกิจทุกขนาดเข้าถึงได้"[cite: 1]
-      </p>
-      <div class="font-mono text-cyan" style="font-size: 16px; font-weight: bold; letter-spacing: 2px;">
-        > SMART PROTECTION. STRONGER BUSINESS. <span class="blink">_</span>[cite: 1]
-      </div>
+    <div style="text-align: center;">
+      <p class="font-tech" style="font-size: 20px;">"Cybersecurity ควรเป็นสิ่งที่ธุรกิจทุกขนาดเข้าถึงได้"</p>
+      <div class="font-mono text-cyan" style="margin-top:20px; letter-spacing: 2px;">> SMART PROTECTION. STRONGER BUSINESS. <span class="blink">_</span></div>
     </div>
   </div>
-
 </div>
 
-<!-- Navigation -->
 <div class="nav">
-  <button id="prevBtn" class="font-tech" style="font-size:16px; font-weight:600;">&lt; PREV</button>
+  <button id="prevBtn">PREV</button>
   <div class="dots" id="dots"></div>
-  <button id="nextBtn" class="font-tech" style="font-size:16px; font-weight:600;">NEXT &gt;</button>
+  <button id="nextBtn">NEXT</button>
 </div>
 
 <script>
-  // --- Custom Cyber Cursor ---
   const cursorBox = document.getElementById('cursorBox');
   const cursorDot = document.getElementById('cursorDot');
-  
   document.addEventListener('mousemove', e => {
-    cursorBox.style.left = e.clientX + 'px';
-    cursorBox.style.top = e.clientY + 'px';
-    cursorDot.style.left = e.clientX + 'px';
-    cursorDot.style.top = e.clientY + 'px';
+    cursorBox.style.left = cursorDot.style.left = e.clientX + 'px';
+    cursorBox.style.top = cursorDot.style.top = e.clientY + 'px';
   });
-
-  document.addEventListener('mousedown', () => {
-    cursorBox.style.transform = 'translate(-50%, -50%) scale(0.7)';
-    cursorBox.style.background = 'rgba(0,229,255,0.1)';
-  });
-  document.addEventListener('mouseup', () => {
-    cursorBox.style.transform = 'translate(-50%, -50%) scale(1)';
-    cursorBox.style.background = 'transparent';
-  });
-
-  // --- Slides Logic ---
   const slides = document.querySelectorAll('.slide');
-  const total = slides.length;
   let current = 0;
-
   const dotsContainer = document.getElementById('dots');
-  for (let i = 0; i < total; i++) {
+  slides.forEach((_, i) => {
     const d = document.createElement('div');
     d.className = 'dot' + (i === 0 ? ' active' : '');
     d.onclick = () => goTo(i);
     dotsContainer.appendChild(d);
-  }
-
+  });
   function goTo(idx) {
-    if (idx === current || idx < 0 || idx >= total) return;
-    
+    if (idx < 0 || idx >= slides.length) return;
     slides[current].classList.remove('active');
-    slides[current].classList.add('prev');
-    
-    // Reset Typewriter and Glitch animations
-    const oldTypewriter = slides[current].querySelectorAll('.typewriter-text');
-    oldTypewriter.forEach(el => el.style.animation = 'none');
-    const oldGlitch = slides[current].querySelector('.glitch');
-    if(oldGlitch) oldGlitch.style.animation = 'none';
-
-    setTimeout(() => {
-      slides[current].classList.remove('prev');
-    }, 600);
-
     current = idx;
     slides[current].classList.add('active');
-    
-    // Trigger animations on active slide
-    const newTypewriter = slides[current].querySelectorAll('.typewriter-text');
-    newTypewriter.forEach(el => {
-      el.offsetHeight; /* trigger reflow */
-      el.style.animation = null; 
-    });
-    const newGlitch = slides[current].querySelector('.glitch');
-    if(newGlitch) newGlitch.style.animation = '';
-
-    document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i === current));
-    document.getElementById('currentSlide').textContent = String(current + 1).padStart(2,'0');
-    document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    document.getElementById('currentSlide').textContent = String(current + 1).padStart(2, '0');
+    document.getElementById('progressBar').style.width = ((current + 1) / slides.length * 100) + '%';
   }
-
   document.getElementById('nextBtn').onclick = () => goTo(current + 1);
   document.getElementById('prevBtn').onclick = () => goTo(current - 1);
-
   document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') goTo(current + 1);
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+    if (e.key === 'ArrowRight' || e.key === ' ') goTo(current + 1);
+    if (e.key === 'ArrowLeft') goTo(current - 1);
   });
-
-  document.getElementById('progressBar').style.width = (1/total*100) + '%';
 </script>
 </body>
 </html>
